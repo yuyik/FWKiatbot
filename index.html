@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Wax bot</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/x-icon" href="js/favicon.ico">
+
+  <script src='js/waxjs.js'></script>
+  <script src="js/tasktimer.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
+        crossorigin="anonymous">
+  </script>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-5-strong" style="background: darkseagreen;">
+	<b><font size='+2'>FW Kiat BOT v.201</font>&nbsp;&nbsp;
+  Lasttime:	<span id="navbar-item--time">00:00:00</span>
+	<ul class="nav nav-flex" style="width: 100%;max-width: 700px;margin-left: auto;margin-right: 10px;padding-left: 5px;">
+		<li class="nav-item" style="display: none;"></li>
+		<li class="nav-item"><span id="id" style="background-color: #3f51b5; color: honeydew;">&nbsp;waxID.wam&nbsp;</span>&nbsp;&nbsp;</li>
+		<li class="nav-item"><span id="waxusd" style="background-color: #ff5722; color: honeydew;">&nbsp;₩: 10.00 บาท&nbsp;&nbsp;</span></li>
+		<li class="nav-item"><b>&nbsp;&nbsp;Fee: <span id='fee'></span>%</b><label id="fwBalance"></label></li>
+	</ul>
+	<ul class="nav nav-flex" style="width: 100%;max-width: 700px;margin-left: auto;margin-right: 10px;padding-left: 5px;padding-bottom: 5px;">
+		<li class="nav-item" style="display: none;"></li>
+		<li class="nav-item"><span id='fwingame'></span></li>
+	</ul>
+	
+	<div>
+	<div class='badge d-inline bg-warning'><span id='waxWallet1'>0.00 WAX</span></div>
+	<div class='badge d-inline bg-success text-white'><span id='ram'>RAM : 100 %</span></div>
+	<div class='badge d-inline bg-danger text-white'><span id='cpu1'>CPU : 100 %</span></div>
+	<div class='badge d-inline bg-success text-white'><span id='net'>NET : 100 %</span></div>
+	<div class='badge d-inline bg-info text-white'><span id='en'>EN : 500/500</span></div>
+	</div>
+	
+  </nav>
+	<div class="container" style="padding-top: 200px;">
+
+    <!-- <b><font size='+2'>Kiat FW BOT v.201&nbsp;&nbsp;&nbsp;</font> -->
+	<!-- <b><font size='+2'>Kiat FW BOT&nbsp;&nbsp;&nbsp;<span id="id"></span></font>&nbsp;&nbsp;&nbsp; -->
+	<button id="login" hidden onclick=login() >WAX Login</button>
+	<input id="updater" hidden><input id="message" style="display:none;"><br>
+    <!-- <hr> -->
+    <!-- <label>fail:</label> -->
+    <input type="checkbox" id="fail" value="fail" style="display:none;"><button id="sign" hidden onclick=sign() >Sign transaction</button>
+    <h5 id="usage"></h5>
+	<!-- <label>Current Message</label> -->
+    <h3 id="current" style="display:none;"></h3>
+    <!-- <hr> -->
+    <label>FarmersWorld</label>&nbsp;&nbsp;&nbsp;<input type="checkbox" id="fwCheck" checked="true"></input>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;<label>BuildPlot</label>&nbsp;&nbsp;&nbsp;<input type="checkbox" id="fwBuild"></input>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;<label>Plat Seed</label>&nbsp;&nbsp;&nbsp;<input type="checkbox" id="fwSeed"></input>&nbsp;&nbsp;&nbsp;
+	<br>
+    <label>Update time :  &nbsp;&nbsp;&nbsp;<span id="update"></span></label><br>
+
+	<font size='-1'><b>REPAIR ซ่อม : </b><input type='number' placeholder='Ex: 30' class='css-input' id='repair_set' value='1' style="width: 50px;"> | <b>เติมเนื้อต่ำกว่า : </b><input type='number' placeholder='Ex: 30' class='css-input' id='recov_set' value='250' style="width: 50px;"><br>
+	<input type='text' placeholder='Ex: 1.7569 ฝากเหรียญ' class='css-input' id='deposit'><select id='de_tokens' name='de_tokens'><option value='FWG'>FWG</option><option value='FWF'>FWF</option><option value='FWW'>FWW</option></select><button type='button' onclick='deposit();'>DEPOSIT</button><br>
+    <input type='text' placeholder='Ex: 1.7569 ถอนเหรียญ' class='css-input' id='with_dr'><select id='wi_tokens' name='wi_tokens'><option value='WOOD'>WOOD</option><option value='FOOD'>FOOD</option><option value='GOLD'>GOLD</option></select><button type='button' onclick='with_dr();'>WITHDRAW</button><br>
+	<input type='text' placeholder='Ex: 1.7569 ขายเหรียญ' class='css-input' id='sell'><select id='se_tokens' name='se_tokens'><option value='FWW'>FWW</option><option value='FWF'>FWF</option><option value='FWG'>FWG</option></select><button type='button' onclick='sell();'>SELL TOKENS</button><br>
+	<input type='text' placeholder='Ex: 1.115 by WAX ซื้อเหรียญ' class='css-input' id='buy'><select id='by_tokens' name='by_tokens'><option value='FWG'>FWG</option><option value='FWF'>FWF</option><option value='FWW'>FWW</option></select><button type='button' onclick='buy();'>BUY TOKENS</button></font><br>
+    <h5 id="resFarmersworld"></h5>
+
+    <hr>
+    <label>Transaction Results</label>
+    <h5 id="response"></h5>
+</div>
+<button type="button" class="regular" name="edit" id="submit" style="display:none;"></button>
+<script>
+	// Common param
+	
+	const { TaskTimer } = tasktimer;
+	const wax = new waxjs.WaxJS({
+		rpcEndpoint: 'https://api.wax.alohaeos.com', // https://api.wax.alohaeos.com https://wax.pink.gg https://api.waxsweden.org https://wax.blokcrafters.io https://api.wax.alohaeos.com https://wax.eosphere.io https://wax.eu.eosamsterdam.net https://chain.wax.io
+		tryAutoLogin: true,
+		waxSigningURL: "https://all-access.wax.io",
+		waxAutoSigningURL: "https://api-idm.wax.io/v1/accounts/auto-accept/"
+	});
+	
+	const fwToolsColor = {"Wood": "Sienna", "Food": "DodgerBlue", "Gold": "Gold"};
+	const fwMembersColor = {"Bronze Member": "Khaki", "Silver Member": "Silver", "Gold Member": "Yellow"};
+
+	const fwRepair = 1;
+	const fwRecover = 60;
+	let toolconf;
+	let cropconf;
+	let mbconf;
+
+	// GET TOKEN https://api.waxsweden.org/v2/state/get_account?account=
+	// END  
+
+	async function login() {
+		try {
+			const userAccount = await wax.login();
+			document.getElementById('updater').value = userAccount;
+			await getCurrentMessage();
+			document.title = userAccount;
+			console.log("LOGIN SUCCESS!");
+			toolconf = await getTableAll("farmersworld", "toolconfs", 100);
+			cropconf = await getTableAll("farmersworld", "cropconf", 100);
+			mbconf = await getTableAll("farmersworld", "mbsconf", 100);
+      await getUsage();
+      document.getElementById("waxusd").innerHTML = "₩";
+	  document.getElementById("id").innerHTML = "&nbsp;"+userAccount +"&nbsp;";
+	const d = new Date();
+	let text = d.toLocaleTimeString('th-TH');
+	  document.getElementById("update").innerHTML = "log in "+ text;
+    } catch(e) {
+			document.getElementById('response').append(e.message);
+		}
+	}
+
+	async function getUsage(){
+    const get_account = await fetch("https://api.waxsweden.org/v2/state/get_account?account="+wax.userAccount).then(response => response.json());
+	console.log(get_account);
+	const ramUsage = Math.floor(100*get_account.account.ram_usage/get_account.account.ram_quota);
+	console.log(ramUsage);
+    const cpuUsage = Math.floor(100*get_account.account.cpu_limit.used/get_account.account.cpu_limit.max);
+	console.log(cpuUsage);
+	const netUsage = Math.floor(100*get_account.account.net_limit.used/get_account.account.net_limit.max);
+	console.log(netUsage);
+    const waxInWallet = get_account.account.core_liquid_balance.split(" ")[0];
+	
+<!-- waxWallet ram cpu net -->
+	document.getElementById("waxWallet1").innerHTML = parseFloat(waxInWallet).toFixed(2)+" wax";
+	document.getElementById("ram").innerHTML = "RAM: "+ramUsage+"%"
+	document.getElementById("cpu1").innerHTML = "CPU: " +cpuUsage+"%"
+	document.getElementById("net").innerHTML = "NET: "+netUsage+"%"
+	
+		
+	const d = new Date();
+	let text = d.toLocaleTimeString('th-TH');
+	document.getElementById("navbar-item--time").innerHTML = text;
+  }
+
+//////////////////////////////////GOTOFARMERSWORLD///////////////////////
+  async function Farmersworld_main() {
+    if (!document.getElementById("fwCheck").checked){
+      return;
+    }
+    
+    <!-- var FWW = await fetch2("https://wax.alcor.exchange/api/markets/104"); -->
+	<!-- await new Promise(r => setTimeout(r, 1000)); -->
+	<!-- console.log(FWW); -->
+    <!-- FWW = await FWW.json.parse(); -->
+    <!-- var FWF = await fetch2("https://wax.alcor.exchange/api/markets/105"); -->
+	<!-- await new Promise(r => setTimeout(r, 1000)); -->
+    <!-- FWF = await FWF.json.parse(); -->
+    <!-- var FWG = await fetch2("https://wax.alcor.exchange/api/markets/106"); -->
+	<!-- await new Promise(r => setTimeout(r, 1000)); -->
+    <!-- FWG = await FWG.json.parse(); -->
+	
+	const fwRepair = parseFloat(document.getElementById('repair_set').value);
+	const fwRecover = parseFloat(document.getElementById('recov_set').value);
+    const balance = await getTableRows("farmersworld", "accounts", wax.userAccount);
+    const fee = await getTableRows("farmersworld", "config", "");
+	document.getElementById('fee').innerHTML = fee.fee;
+    
+    let balanceGold = 0;
+    let balanceFood = 0;
+    let balanceWood = 0;
+    balance.balances.forEach(item => {
+    	if (item.includes("GOLD")) 
+    		balanceGold = item.split(" ")[0];
+    	else if(item.includes("FOOD"))
+    		balanceFood = item.split(" ")[0];
+    	else if(item.includes("WOOD"))
+    		balanceWood = item.split(" ")[0];
+    	}
+    );
+	
+/////////////////// FWG
+<!-- var url1 = "https://api.wax.alohaeos.com/v1/chain/get_currency_balance"; -->
+var url1 = "https://wax.pink.gg/v1/chain/get_currency_balance";
+var xhr1 = new XMLHttpRequest();
+xhr1.open("POST", url1);
+xhr1.setRequestHeader("Content-Type", "application/json");
+xhr1.onreadystatechange = function () {
+   if (xhr1.readyState === 4) {
+	  const obj1 = parseFloat(JSON.parse(xhr1.responseText));
+	  document.getElementById('fww1').innerHTML = obj1.toFixed(4);
+   }};
+var data1 = JSON.stringify({
+	account: wax.userAccount,
+	code: "farmerstoken",
+	symbol: "FWW",
+	limit: 1
+});
+xhr1.send(data1);
+/////////////////// FWW
+<!-- var url2 = "https://api.wax.alohaeos.com/v1/chain/get_currency_balance"; -->
+var url2 = "https://wax.blokcrafters.io/v1/chain/get_currency_balance";
+var xhr2 = new XMLHttpRequest();
+xhr2.open("POST", url2);
+xhr2.setRequestHeader("Content-Type", "application/json");
+xhr2.onreadystatechange = function () {
+   if (xhr2.readyState === 4) {
+	  const obj2 = parseFloat(JSON.parse(xhr2.responseText));
+	  document.getElementById('fwf1').innerHTML = obj2.toFixed(4);
+   }};
+var data2 = JSON.stringify({
+	account: wax.userAccount,
+	code: "farmerstoken",
+	symbol: "FWF",
+	limit: 1
+});
+xhr2.send(data2);
+/////////////////// FWF
+<!-- var url3 = "https://api.wax.alohaeos.com/v1/chain/get_currency_balance"; -->
+var url3 = "https://wax.eosphere.io/v1/chain/get_currency_balance";
+var xhr3 = new XMLHttpRequest();
+xhr3.open("POST", url3);
+xhr3.setRequestHeader("Content-Type", "application/json");
+xhr3.onreadystatechange = function () {
+   if (xhr3.readyState === 4) {
+	  const obj3 = parseFloat(JSON.parse(xhr3.responseText));
+	  document.getElementById('fwg1').innerHTML = obj3.toFixed(4);
+   }};
+var data3 = JSON.stringify({
+	account: wax.userAccount,
+	code: "farmerstoken",
+	symbol: "FWG",
+	limit: 1
+});
+xhr3.send(data3);
+/////////////////// FWF
+	
+	document.getElementById('fwingame').innerHTML = "<b>เหรียญนอกเกม : <img src='js/FWWtoken.png' width='18'> <span id='fww1'></span> | <img src='js/FWFtoken.png' width='18'> <span id='fwf1'></span> | <img src='js/FWGtoken.png' width='18'> <span id='fwg1'></span></b><br>";
+	document.getElementById('fwingame').innerHTML += "<b>เหรียญในเกม : <img src='js/FWW.png' width='20'></img> "+parseFloat(balanceWood).toFixed(4)+" |&nbsp;<img src='js/FWF.png' width='20'></img> "+parseFloat(balanceFood).toFixed(4)+" |&nbsp;<img src='js/FWG.png' width='20'></img> "+parseFloat(balanceGold).toFixed(4)+"</b><br>";
+
+    // document.getElementById('fwBalance').innerHTML = `${balance.balances},<div class="badge d-inline bg-primary text-white">fee: ${fee.fee}%</div>`;
+    
+    let sInnerHTML = "";
+	//sInnerHTML += "<input onclick='re_energy()' class='btn btn-primary btn-sm'><b>Energy "+balance.energy+"/"+balance.max_energy+"</b></input><br>";
+	sInnerHTML += "<b><input type='button' onclick='re_energy(value)' class='btn btn-primary btn-sm' value='Energy: "+balance.energy+"/"+balance.max_energy+"'></b><br>";
+    sInnerHTML += "<br>Tools<br>";
+	document.getElementById('en').innerHTML = '&nbsp;EN:&nbsp;'+balance.energy+'/'+balance.max_energy+'&nbsp;';
+	
+
+    // document.getElementById('resFarmersworld').innerHTML = "<img src='/js/FWW.png'></img> "+parseFloat(FWW.last_price).toFixed(4)+" WAX", 
+		// <img src='/js/FWF.png'></img> ${parseFloat(FWF.last_price).toFixed(4)} WAX <img src='/js/FWG.png'></img> ${parseFloat(FWG.last_price).toFixed(4)} WAX<br>`;
+    // document.getElementById('resFarmersworld').innerHTML += `<div class='badge d-inline bg-info text-white' style='font-size: large;'>Energy ${balance.energy}/${balance.max_energy}</div><br>`;
+    // document.getElementById('resFarmersworld').innerHTML += "<br>Tools<br>";
+    sInnerHTML += await fwTools(balanceGold);
+    
+	let jsonfcoin = await fetch("https://wax.api.atomicassets.io/atomicassets/v1/assets?collection_name=farmersworld&schema_name=farmercoins&owner="+wax.userAccount+"&page=1&limit=100&order=desc&sort=asset_id");
+	// https://atomic.hivebp.io 
+	// https://atomic.3dkrender.com
+	let CoinsID = await jsonfcoin.json();
+    sInnerHTML += "<br>Member <font size='2'>[Farmer Coin : " + Object.keys(CoinsID.data).length + " Ea]</font><br>";
+    // document.getElementById('resFarmersworld').innerHTML += "<br>Member<br>";
+    sInnerHTML += await fwMembers();
+	sInnerHTML += await fwBuild(); // สร้างแปลง
+    sInnerHTML += "<br>FarmPlot<br>";
+    // document.getElementById('resFarmersworld').innerHTML += "<br>FarmPlot<br>";
+    sInnerHTML += await fwCrops(); // รดน้ำ
+    document.getElementById('resFarmersworld').innerHTML = sInnerHTML;
+
+    if (balance.energy <= fwRecover)
+    {
+      let recover = (balanceFood.split(".")[0]) * 5;
+      if (recover == 0)
+      {
+        $.ajax({
+            type: "POST",
+            url: "/submit",
+            data: {
+                  detail: `${wax.userAccount} FW => Need more 🐟\n ${balanceFood} remains!\n`+
+                  `Energy ${balance.energy}/${balance.max_energy}` 
+              }
+          });
+          return;
+      }
+	  
+	  if (recover < balance.max_energy){
+      let config = {
+              actions: [{
+                account: 'farmersworld',
+                name: 'recover',
+                authorization: [{
+                  actor: wax.userAccount,
+                  permission: 'active',
+                }],
+                data: {
+                  owner: wax.userAccount,
+                  energy_recovered: recover
+                },
+              }]
+            };
+        let ret = await sign(config);
+        if (ret == true){console.log(`${recover.toFixed(0)} ENERGY, RECOVERY SUCCESS!`+" Please refill food more.");}
+        else{console.log(`${recover.toFixed(0)} ENERGY, RECOVERY FAILED! ${ret}`);}}
+		
+      if (recover >= balance.max_energy){
+	  recover = parseFloat(balance.max_energy - balance.energy);
+      let config = {
+              actions: [{
+                account: 'farmersworld',
+                name: 'recover',
+                authorization: [{
+                  actor: wax.userAccount,
+                  permission: 'active',
+                }],
+                data: {
+                  owner: wax.userAccount,
+                  energy_recovered: recover
+                },
+              }]
+            };
+        let ret = await sign(config);
+        if (ret == true){console.log(`${recover.toFixed(0)} ENERGY, RECOVERY SUCCESS!`);}
+        else{console.log(`${recover.toFixed(0)} ENERGY, RECOVERY FAILED! ${ret}`);}}
+    }
+  }
+
+	async function fwMembers(){
+    let sInnerHTML = "";
+		const mbs = await getTableRows_byIndex("farmersworld", "mbs", wax.userAccount, '2', 'name');
+		mbs.forEach(async element => {
+			const mbName = mbconf.rows.find(elem => elem.template_id === element.template_id);
+			
+      sInnerHTML += "<div class='d-inline-flex w-100' style='align-items: center !important;'><div class='badge text-white' style='width: 130px; background-color: "+fwToolsColor[mbName.type]+";'>"+mbName.name+"</div>&emsp;<div class='badge' style='width: 120px;'>&emsp;</div>&emsp;<div class='badge bg-secondary text-white' style='width: 120px;'>"+sec2time(element.next_availability - Date.now()/1000)+"</div></div><br>";
+			// document.getElementById('resFarmersworld').innerHTML += `<div class="d-inline-flex w-100">
+			// 			<div class="badge text-white" style="width: 130px; background-color: ${fwToolsColor[mbName.type]};">${mbName.name}</div>&emsp;
+			// 			<div class="badge" style="width: 120px;">&emsp;</div>&emsp;
+			// 			<div class="badge bg-secondary text-white" style="width: 120px;">${sec2time(element.next_availability - Date.now()/1000)}</div>
+			// 		</div><br>`;
+      if (element.next_availability - Date.now()/1000 < 0){
+        let config = {
+              actions: [{
+                account: 'farmersworld',
+                name: 'mbsclaim',
+                authorization: [{
+                  actor: wax.userAccount,
+                  permission: 'active',
+                }],
+                data: {
+                  owner: wax.userAccount,
+                  asset_id: element.asset_id
+                },
+              }]
+            };
+        let ret = await sign(config);
+        if (ret == true){
+          console.log(`Id ${ element.asset_id}, HARVEST SUCCESS!`);
+          $.ajax({
+              type: "POST",
+              url: "/submit",
+              data: {
+                    detail: `${wax.userAccount} FW => Member Id ${element.asset_id},🪓 HARVEST SUCCESS!\n` 
+                }
+            });
+        }
+        else{ console.log(`Id ${ element.asset_id}, HARVEST FAILED! ${ret}`); }
+      }
+    });
+    return sInnerHTML;
+  }
+  
+async function fwBuild(){
+	let sInnerHTML = "";
+		if (document.getElementById("fwBuild").checked){
+		const build = await getTableRows_byIndex('farmersworld', 'buildings', wax.userAccount, '2', 'name');
+		build.forEach(async element => {
+			if (element.next_availability - Date.now()/1000 < 0){
+				let config = {
+					  actions: [{
+						account: 'farmersworld',
+						name: 'bldclaim',
+						authorization: [{
+						  actor: wax.userAccount,
+						  permission: 'active',
+						}],
+						data: {
+						  owner: wax.userAccount,
+						  asset_id: element.asset_id
+						},
+					  }]
+					};
+				let ret = await sign(config);
+				if (ret == true){
+					console.log(`Id ${ element.asset_id}, BUILD SUCCESS!`);
+				}
+				else{
+					console.log(`Id ${ element.asset_id}, BUILD FAILED! ${ret}`);
+				}
+      		}
+  	});
+	};
+	return sInnerHTML;
+	};
+	
+	async function fwCrops(){
+    let sInnerHTML = "";
+		const crops = await getTableRows_byIndex("farmersworld", "crops", wax.userAccount, '2', 'name');
+		<!-- console.log(crops); -->
+		crops.forEach(async element => {
+		  	const cropName = cropconf.rows.find(elem => elem.template_id === element.template_id);
+			//document.getElementById('resFarmersworld').append(`Id ${element.asset_id}, claimed ${element.times_claimed}/42, next_harvest ${sec2time(element.next_availability - Date.now()/1000)}`);
+			sInnerHTML += "<div class='d-inline-flex w-100'><div class='badge bg-warning text-dark' style='width: 110px;'>"+cropName.name+"</div>&emsp;<div class='badge bg-secondary text-white' style='width: 100px;'>"+element.times_claimed+" / 42</div>&emsp;<div class='badge bg-secondary text-white' style='width: 100px;'>"+sec2time(element.next_availability - Date.now()/1000)+"</div></div><br>";
+			
+			<!-- sInnerHTML += "<div class='d-inline-flex w-100' style='align-items: center !important;'><div class='badge' style='background-color: coral;'><img src='img/"+cropName.name+".png' width='10' ></img></div>&nbsp;<div class='badge bg-secondary text-white' style='width: 100px;'>"+element.times_claimed+" / 42</div>&nbsp;<div class='badge bg-secondary text-white' style='width: 100px;'>"+sec2time(element.next_availability - Date.now()/1000)+"</div></div></font><br>";			 -->
+			
+			if (element.next_availability - Date.now()/1000 < 0){
+				let config = {
+					  actions: [{
+						account: 'farmersworld',
+						name: 'cropclaim',
+						authorization: [{
+						  actor: wax.userAccount,
+						  permission: 'active',
+						}],
+						data: {
+						  owner: wax.userAccount,
+						  crop_id: element.asset_id
+						},
+					  }]
+					};
+				let ret = await sign(config);
+				if (ret == true){
+					console.log(`Id ${ element.asset_id}, HARVEST SUCCESS!`);
+				}
+				else{
+					console.log(`Id ${ element.asset_id}, HARVEST FAILED! ${ret}`);
+				}
+      		}
+  	});
+    return sInnerHTML;
+  }
+  
+	async function fwTools(balanceGold){
+    let sInnerHTML = "";
+		const tools = await getTableRows_byIndex("farmersworld", "tools", wax.userAccount, '2', 'name');
+		tools.sort(function(a, b) {
+      return a.template_id - b.template_id;
+    });
+    tools.forEach(async element => {
+      const toolName = toolconf.rows.find(elem => elem.template_id === element.template_id);
+			
+      sInnerHTML += "<div class='d-inline-flex w-100'><div class='badge text-white' style='width: 130px; background-color: "+fwToolsColor[toolName.type]+";'>"+toolName.template_name+"</div>&emsp;<div class='badge bg-secondary text-white' style='width: 120px;'>"+element.current_durability+"/"+element.durability+"</div>&emsp;<div class='badge bg-secondary text-white' style='width: 120px;'>"+sec2time(element.next_availability - Date.now()/1000)+"</div>&emsp;<font size='-1'><button type='submit' class='myButton' value='"+element.asset_id+"' onclick='re_pair(value);'>REPAIR</button></font></div><br>";
+			// document.getElementById('resFarmersworld').innerHTML += `<div class='d-inline-flex w-100'>
+			// 		<div class='badge text-white' style='width: 130px; background-color: ${fwToolsColor[toolName.type]};'>${toolName.template_name}</div>&emsp;
+			// 		<div class='badge bg-secondary text-white' style='width: 120px;'>${element.current_durability}/${element.durability}</div>&emsp;
+			// 		<div class='badge bg-secondary text-white' style='width: 120px;'>${sec2time(element.next_availability - Date.now()/1000)}</div>
+			// 	</div><br>`;
+			
+      if (element.next_availability - Date.now()/1000 < 0){
+        let config = {
+              actions: [{
+                account: 'farmersworld',
+                name: 'claim',
+                authorization: [{
+                  actor: wax.userAccount,
+                  permission: 'active',
+                }],
+                data: {
+                  owner: wax.userAccount,
+                  asset_id: element.asset_id
+                },
+              }]
+            };
+        let ret = await sign(config);
+        if (ret == true){
+          console.log(`Id ${ element.asset_id}, HARVEST SUCCESS!`);
+          $.ajax({
+              type: "POST",
+              url: "/submit",
+              data: {
+                    detail: `${wax.userAccount} FW => Id ${element.asset_id},🪓 HARVEST SUCCESS!\n` +
+                    `current_durability: ${element.current_durability}/${element.durability}\n`+
+                    `Energy ${balance.energy}/${balance.max_energy}` 
+                }
+            });
+        }
+        else{ console.log(`Id ${ element.asset_id}, HARVEST FAILED! ${ret}`); }
+      }
+
+      if (element.current_durability <= fwRepair)
+      {
+        let goldNeed = (element.durability - element.current_durability) / 5;
+        if ( goldNeed > balanceGold )
+        {
+          $.ajax({
+            type: "POST",
+            url: "/submit",
+            data: {
+                  detail: `${wax.userAccount} FW => Need more 🎟️\n ${balanceGold} remains!\n` +
+                  `current_durability: ${element.current_durability}/${element.durability}` 
+              }
+          });
+          return;
+        }
+
+        let config = {
+              actions: [{
+                account: 'farmersworld',
+                name: 'repair',
+                authorization: [{
+                  actor: wax.userAccount,
+                  permission: 'active',
+                }],
+                data: {
+                  asset_owner: wax.userAccount,
+                  asset_id: element.asset_id
+                },
+              }]
+            };
+        let ret = await sign(config);
+        if (ret == true){console.log(`Id ${ element.asset_id}, REPAIR SUCCESS!`);}
+        else{console.log(`Id ${ element.asset_id}, REPAIR FAILED! ${ret}`);}
+      }
+    });
+    return sInnerHTML;
+  }
+  
+  async function deposit(){
+	var inputVal1 = (parseFloat(document.getElementById("deposit").value)).toFixed(4);
+	const inputVal = "[\""+inputVal1+" "+document.getElementById("de_tokens").value+"\"]";
+  	let config = {
+			actions: [{
+				account: 'farmerstoken',
+				name: 'transfers',
+				authorization: [{
+				actor: wax.userAccount,
+				permission: 'active',
+			}],
+			data: {
+				from: wax.userAccount,
+				to: 'farmersworld',
+				quantities: JSON.parse(inputVal),
+				memo: 'deposit',
+			},
+            }]
+		};
+    let ret = await sign(config);
+    if (ret == true){
+        console.log(`DEPOSIT ${inputVal1} ${document.getElementById("de_tokens").value} DONE!`);
+    }
+    else { 
+        console.log(`DEPOSIT FAILED`);
+    }
+  }
+  
+  async function with_dr(){
+	var inputVal1 = (parseFloat(document.getElementById("with_dr").value)).toFixed(4);
+	const inputVal = "[\""+inputVal1+" "+document.getElementById("wi_tokens").value+"\"]";
+	var fee_put = document.getElementById('fee').innerHTML;
+  	let config = {
+			actions: [{
+				account: 'farmersworld',
+				name: 'withdraw',
+				authorization: [{
+				actor: wax.userAccount,
+				permission: 'active',
+			}],
+			data: {
+				owner: wax.userAccount,
+				quantities: JSON.parse(inputVal),
+				fee: fee_put,
+			},
+            }]
+		};
+    let ret = await sign(config);
+    if (ret == true){
+        console.log(`WITHDRAW ${inputVal1} ${document.getElementById("wi_tokens").value} DONE!`);
+    }
+    else { 
+        console.log(`WITHDRAW FAILED`);
+    }
+  }
+  
+  async function sell(){
+	var inputVal1 = (parseFloat(document.getElementById("sell").value)).toFixed(4);
+	const inputVal = inputVal1+" "+document.getElementById("se_tokens").value;
+  	let config = {
+			actions: [{
+				account: 'farmerstoken',
+				name: 'transfer',
+				authorization: [{
+				actor: wax.userAccount,
+				permission: 'active',
+			}],
+			data: {
+				from: wax.userAccount,
+				to: 'alcordexmain',
+				quantity: inputVal,
+				memo: '0.00000000 WAX@eosio.token',
+			},
+            }]
+		};
+    let ret = await sign(config);
+    if (ret == true){
+        console.log(`SELL ${inputVal1} ${document.getElementById("se_tokens").value} DONE!`);
+    }
+    else { 
+        console.log(`SELL FAILED`);
+    }
+  }
+  
+  async function buy(){
+	var inputVal1 = (parseFloat(document.getElementById("buy").value)).toFixed(8);
+	const inputVal = inputVal1+" WAX";
+	var inputTokens = "0.0000 "+document.getElementById("by_tokens").value+"@farmerstoken";
+  	let config = {
+			actions: [{
+				account: 'eosio.token',
+				name: 'transfer',
+			authorization: [{
+				actor: wax.userAccount,
+				permission: 'active',
+			}],
+			data: {
+				from: wax.userAccount,
+				to: 'alcordexmain',
+				quantity: inputVal,
+				memo: inputTokens,
+			},
+            }]
+		};
+    let ret = await sign(config);
+    if (ret == true){
+        console.log(`BUY ${inputVal1} WAX on ${document.getElementById("by_tokens").value} DONE!`);
+    }
+    else { 
+        console.log(`BUY FAILED`);
+    }
+  }
+  
+  async function re_energy(value){
+	recove = ((value.split(" ")[1]).split("/")[1])-((value.split(" ")[1]).split("/")[0]);
+	console.log('Recovery '+recove+' energy please wait..');
+  	let config = {
+			actions: [{
+			account: 'farmersworld',
+			name: 'recover',
+		authorization: [{
+			actor: wax.userAccount,
+			permission: 'active',
+		}],
+		data: {
+			owner: wax.userAccount,
+			energy_recovered: recove,
+			},
+            }]
+		};
+    let ret = await sign(config);
+    if (ret == true){
+        console.log(`RECOVERY ${recove} ENERGY DONE!`);
+    }
+    else { 
+        console.log(`RECOVERY ENERGY FAILED`);
+    }
+  }
+  
+  async function re_pair(value){
+	console.log('Repair tool '+value+' please wait..');
+  	let config = {
+			actions: [{
+				account: 'farmersworld',
+				name: 'repair',
+			authorization: [{
+				actor: wax.userAccount,
+				permission: 'active',
+		}],
+		data: {
+			asset_owner: wax.userAccount,
+			asset_id: value,
+			},
+            }]
+		};
+    let ret = await sign(config);
+    if (ret == true){
+        console.log(`REPAIR TOOL ${value} DONE!`);
+    }
+    else { 
+        console.log(`REPAIR TOOL ${value} FAILED`);
+    }
+  }
+
+////////////// GET TOKENS
+async function getTokensPrices() {
+    await getUsage();
+    //let price = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=WAX&vs_currencies=USD");
+    //price = await price.json();
+    //document.getElementById("waxusd").innerHTML = "&nbsp;₩: " + parseFloat(price.wax.usd).toFixed(4) +" &nbsp;";
+	
+	let prices = await fetch("https://3rdparty-apis.coinmarketcap.com/v1/cryptocurrency/widget?id=2300&convert_id=2809");
+    prices = await prices.json();
+    document.getElementById("waxusd").innerHTML = "&nbsp;&nbsp;&nbsp;₩: " + parseFloat(prices.data[2300].quote[2809].price).toFixed(2) +" บาท &nbsp;";
+
+    let FWW = await fetch("https://wax.alcor.exchange/api/markets/104");
+    await new Promise(r => setTimeout(r, 1000));
+    FWW = await FWW.json();
+    let FWF = await fetch("https://wax.alcor.exchange/api/markets/105");
+    await new Promise(r => setTimeout(r, 1000));
+    FWF = await FWF.json();
+    let FWG = await fetch("https://wax.alcor.exchange/api/markets/106");
+    await new Promise(r => setTimeout(r, 1000));
+    FWG = await FWG.json();
+	
+			<!-- $.getJSON("https://wax.alcor.exchange/api/markets", function(json) { -->
+            <!-- var fix = json -->
+            <!-- var FWW = json[64].last_price.toFixed(3) -->
+			<!-- var FWF = json[63].last_price.toFixed(3) -->
+			<!-- var FWG = json[62].last_price.toFixed(3) -->
+			FWW =FWW.last_price;
+			FWG =FWG.last_price;
+			FWF =FWF.last_price;
+            <!-- document.getElementById("fww").innerHTML = fww -->
+			<!-- document.getElementById("fwf").innerHTML = fwf -->
+			<!-- document.getElementById("fwg").innerHTML = fwg -->
+			    document.getElementById('fwBalance').innerHTML = "<div class='d-inline-block w-100'>&nbsp;<div class='badge rounded-pill bg-light text-dark'><img src='js/FWWtoken.png' style='height: 15px;vertical-align: middle;align-items: center;'></img>&nbsp;"+parseFloat(FWW).toFixed(4)+"</div>&nbsp;<div class='badge rounded-pill bg-light text-dark'><img src='js/FWFtoken.png' style='height: 15px;align-items: center;vertical-align: middle;'></img>&nbsp;"+parseFloat(FWF).toFixed(4)+"</div>&nbsp;<div class='badge rounded-pill bg-light text-dark'><img src='js/FWGtoken.png' style='height: 15px;align-items: center;vertical-align: middle;'></img>&nbsp;"+parseFloat(FWG).toFixed(4)+"</div></div>";
+	
+    <!-- document.getElementById('fwBalance').innerHTML = "<div class='d-inline-block w-100'>&nbsp;<div class='badge rounded-pill bg-light text-dark'><img src='js/FWWtoken.png' style='height: 15px;vertical-align: middle;align-items: center;'></img>&nbsp;"+parseFloat(FWW.last_price).toFixed(4)+"</div>&nbsp;<div class='badge rounded-pill bg-light text-dark'><img src='js/FWFtoken.png' style='height: 15px;align-items: center;vertical-align: middle;'></img>&nbsp;"+parseFloat(FWF.last_price).toFixed(4)+"</div>&nbsp;<div class='badge rounded-pill bg-light text-dark'><img src='js/FWGtoken.png' style='height: 15px;align-items: center;vertical-align: middle;'></img>&nbsp;"+parseFloat(FWG.last_price).toFixed(4)+"</div></div>"; -->
+	
+  }
+  
+/////////////////// SIGN
+  async function sign(configTranscat) {
+    if(!wax.api) {
+      return document.getElementById('response').innerHTML = '* Login first *';
+    }
+
+    const updater = document.getElementById('updater').value;
+    const message = document.getElementById('message').value;
+    const fail = document.getElementById('fail').checked;
+
+    try {
+      const result = await wax.api.transact(configTranscat, {
+        blocksBehind: 3,
+        expireSeconds: 30
+      });
+      
+      document.getElementById('response').append(JSON.stringify(result));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return true;
+      // await getCurrentMessage();
+    } catch(e) {
+      document.getElementById('response').innerText = e.message;
+      return e.message;
+    }
+  }
+
+  async function getTableRows_byIndex(code, tableName, bound, index, key_type){
+    if (typeof(code) != "string" || 
+        typeof(bound) != "string" || 
+        typeof(tableName) != "string" || 
+        typeof(index) != "string" || 
+        typeof(key_type) != "string") {
+      return false;
+    }
+    let result;
+    try {
+      result = await wax.api.rpc.get_table_rows({
+        json: true,               // Get the response as json
+        code: code,      // Contract that we target
+        scope: code,         // Account that owns the data
+        table: tableName,        // Table name
+        index_position: index,
+        key_type: key_type,
+        lower_bound: bound,
+        upper_bound: bound,
+        reverse: false,           // Optional: Get reversed data
+    });
+    } catch(e) {
+      document.getElementById('response').innerHTML = e.message;
+      console.log("ERROR FOR: " + code + ", " + tableName + ", " + bound);
+    }
+    return result.rows;
+  }
+
+  async function getTableRows(code, tableName, bound, limit=1){
+    if (typeof(code) != "string" || 
+        typeof(bound) != "string" || 
+        typeof(tableName) != "string") {
+      return false;
+    }
+    let result;
+    try {
+      result = await wax.api.rpc.get_table_rows({
+        json: true,               // Get the response as json
+        code: code,      // Contract that we target
+        scope: code,         // Account that owns the data
+        table: tableName,        // Table name
+        lower_bound: bound,
+        upper_bound: bound,
+        limit: limit,                // Maximum number of rows that we want to get
+        reverse: false,           // Optional: Get reversed data
+        show_payer: false          // Optional: Show ram payer
+    });
+    } catch(e) {
+      document.getElementById('response').append(e.message);
+      console.log("ERROR FOR: " + code + ", " + tableName + ", " + bound);
+    }
+    return result.rows[0];
+  }
+	
+	async function getTableAll(code, tableName, limit=100){
+		let result;
+		try {
+		  result = await wax.api.rpc.get_table_rows({
+			json: true,               // Get the response as json
+			code: code,      // Contract that we target
+			scope: code,         // Account that owns the data
+			table: tableName,        // Table name
+			lower_bound: "",
+			upper_bound: "",
+			limit: limit,                // Maximum number of rows that we want to get
+			reverse: false,           // Optional: Get reversed data
+			show_payer: false          // Optional: Show ram payer
+		});
+		} catch(e) {
+		  document.getElementById('response').append(e.message);
+		  console.log("ERROR FOR: " + code + ", " + tableName);
+		}
+		return result;
+	  }
+
+  async function getCurrentMessage() {
+    const res = await wax.rpc.get_table_rows({
+      json: true,
+      code: 'test.wax',
+      scope: 'test.wax',
+      table: 'messages',
+      lower_bound: wax.userAccount,
+      upper_bound: wax.userAccount,
+    });
+
+    const message = res.rows[0] ? res.rows[0].message : `<No message is set for ${wax.userAccount}>`;
+    document.getElementById('current').textContent = message;
+  }
+
+// --------------------------------------------Run at init---------------------------------------//
+  // set a random value to the initial message value
+  document.getElementById('message').value = Math.random().toString(36).substring(2);
+  login(); // get onetime table
+
+	const count = 10;
+	const timerMain = new TaskTimer(1000);
+  timerMain.add([
+    {
+      id: 'FarmersWorld',       // unique ID of the task
+      // tickDelay: 1,       // 1 tick delay before first run
+      tickInterval: 21,   // run every 10 ticks (10 x interval = 10000 ms)
+      totalRuns: 0,       // run 2 times only. (set to 0 for unlimited times)
+      callback(task) {
+          // timerlogin.reset();
+          //console.log(`${task.id} task has run ${task.currentRuns} times.`);
+          Farmersworld_main();
+      }
+    },
+	{
+      id: 'tokenPrice',       // unique ID of the task
+      // tickDelay: 0,       // 1 tick delay before first run
+      tickInterval: 121,   // run every 10 ticks (10 x interval = 10000 ms)
+      totalRuns: 0,       // run 2 times only. (set to 0 for unlimited times)
+      callback(task) {
+          // timerlogin.reset();
+          //console.log(`${task.id} task has run ${task.currentRuns} times.`);
+          getTokensPrices();
+      }
+    }
+    
+  ]);
+  timerMain.start()
+
+  function sec2time(timeInSeconds) {
+    var pad = function(num, size) { return ('000' + num).slice(size * -1); },
+    time = parseFloat(timeInSeconds).toFixed(3),
+    hours = Math.floor(time / 60 / 60),
+    minutes = Math.floor(time / 60) % 60,
+    seconds = Math.floor(time - minutes * 60),
+    milliseconds = time.slice(-3);
+	return pad(hours, 2) + ':' + pad(minutes, 2) + ':' + pad(seconds, 2);
+    //return pad(hours, 2) + ':' + pad(minutes, 2) + ':' + pad(seconds, 2) + ',' + pad(milliseconds, 3);
+  }
+  
+	async function fetch2(url) {
+
+			let responseData = {};
+			const body = {
+				method: "GET",
+			};
+			//console.log(body);
+			//return body;
+			await fetch(url, body)
+				.then((res) => res.json())
+				.then((data) => {
+					responseData = data;
+					//console.log(data);
+					return data;
+				})
+				
+function generateDatabaseDateTime(date) {
+  return date.toISOString().replace("T"," ").substring(0, 19);
+}
+}
+
+</script>
+</body>
+</html>
